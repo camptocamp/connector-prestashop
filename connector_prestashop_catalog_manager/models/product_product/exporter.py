@@ -79,7 +79,7 @@ class ProductCombinationExport(TranslationPrestashopExporter):
                     'prestashop.product.combination.option.value']\
                     .with_context(connector_no_export=True).create({
                         'backend_id': self.backend_record.id,
-                        'odoo_id': value.val_id.id,
+                        'odoo_id': value.id,
                         'id_attribute_group': attribute_ext_id
                     })
                 export_record(
