@@ -3,8 +3,10 @@
 
 from collections import defaultdict
 
-from openerp import api, fields, models
+from openerp import _, api, fields, models
 from openerp.addons.decimal_precision import decimal_precision as dp
+
+from openerp.addons.connector.exception import FailedJobError
 
 from ...unit.backend_adapter import GenericAdapter
 from ...backend import prestashop
@@ -177,7 +179,20 @@ class ProductInventoryAdapter(GenericAdapter):
     def export_quantity_url(self, filters, quantity, client=None):
         if client is None:
             client = self.client
+        # Get the ids of the 'stock_availables' records for this product.
+        # Thereafter, we will update those records with the new quantities.
         response = client.search(self._prestashop_model, filters)
+        if not response:
+            # We observed a bug in PrestaShop where when we create
+            # a product, sometimes PrestaShop does not a record in the
+            # 'stock_availables' table, then we get an empty list of ids.
+            # Fail hard so we are noticed about this issue. Otherwise,
+            # we would just not be aware that no quantity has been sent.
+            raise FailedJobError(
+                _('Export of stock failure: not able to change the '
+                  'quantity in PrestaShop because the product has no '
+                  'stock record ("stock_availables")')
+            )
         for stock_id in response:
             res = client.get(self._prestashop_model, stock_id)
             first_key = res.keys()[0]
