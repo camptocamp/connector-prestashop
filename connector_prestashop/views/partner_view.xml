@@ -7,7 +7,7 @@
 
 <odoo>
 
-    <record id="view_partner_form" model="ir.ui.view">
+    <record id="view_partner_connector_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="connector.view_partner_connector_form" />
@@ -19,7 +19,21 @@
                 <group string="PrestaShop Bindings">
                     <field  name="prestashop_bind_ids" nolabel="1"/>
                 </group>
+                <group string="PrestaShop Address Bindings">
+                    <field  name="prestashop_address_bind_ids" nolabel="1"/>
+                </group>
             </page>
+        </field>
+    </record>
+
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <field name="website" position="before">
+                <field name="external_company" />
+            </field>
         </field>
     </record>
 
@@ -36,6 +50,7 @@
                     <field name="date_upd"/>
                     <field name="group_ids" widget="many2many_tags"/>
                     <field name="newsletter"/>
+                    <field name="company"/>
                 </group>
             </form>
         </field>
@@ -68,6 +83,7 @@
                     <field name="date_add"/>
                     <field name="date_upd"/>
                     <field name="vat_number"/>
+                    <field name="company"/>
                 </group>
             </form>
         </field>
@@ -80,6 +96,9 @@
             <tree string="PrestaShop Address">
                 <field name="backend_id"/>
                 <field name="shop_group_id"/>
+                <button name="resync"
+                    type="object"
+                    string="Resync" />
             </tree>
         </field>
     </record>
